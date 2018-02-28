@@ -1,7 +1,7 @@
 # Customer Churn Prediction
 
-import dataprep
-from dataprep.Package import Package
+# Use the Azure Machine Learning data preparation package
+from azureml.dataprep import package
 import pickle
 
 from sklearn.naive_bayes import GaussianNB
@@ -19,8 +19,10 @@ from azureml.logging import get_azureml_logger
 run_logger = get_azureml_logger() 
 run_logger.log('amlrealworld.ChurnPrediction.CATelcoCustomerChurnModeling','true')
 
-with Package.open_package('CATelcoCustomerChurnTrainingSample.dprep') as pkg:
-    df = pkg.dataflows[0].get_dataframe(spark=False)
+# This call will load the referenced package and return a DataFrame.
+# If run in a PySpark environment, this call returns a
+# Spark DataFrame. If not, it will return a Pandas DataFrame.
+df = package.run('CATelcoCustomerChurnTrainingSample.dprep', dataflow_idx=0)
 
 columns_to_encode = list(df.select_dtypes(include=['category','object']))
 for column_to_encode in columns_to_encode:

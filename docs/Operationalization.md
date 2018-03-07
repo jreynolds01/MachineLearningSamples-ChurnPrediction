@@ -21,8 +21,9 @@ az ml env local
 
 ## 3. Scoring and Schema Files
 
-Open churn_schema_gen.py. Churn_schema_gen.py is responsible for generating the scoring and schema files necessary to operationalize Churn Prediction. Prepare the web service definition by authoring init() and run() functions.
-The init() function loads the model (model.pkl) as shown below:
+Open `churn_schema_gen.py`. `churn_schema_gen.py` is responsible for generating the scoring and schema files necessary to operationalize Churn Prediction. Prepare the web service definition by authoring `init()` and `run()` functions.
+The `init()` function loads the model (`model.pkl`) as shown below:
+
 ```
 def init():
     from sklearn.externals import joblib
@@ -31,7 +32,9 @@ def init():
     global model
     model = joblib.load('model.pkl')
 ```
-The run() function takes the input dataframe, input_df and performs one-hot encoding. Columns_encoded is the list of all columns after encoding from the modeling exercise and the encoded dataframe is passed to the model for prediction. The three columns year, month and churn (class) are also deleted to be consistent with the preprocessing performed with the modeling.
+
+The `run()` function takes the input dataframe (`input_df`) and performs one-hot encoding. `columns_encoded` is the list of all columns after encoding from the modeling exercise and the encoded dataframe is passed to the model for prediction. The three columns `year`, `month`, and `churn` are also deleted to be consistent with the preprocessing performed with the modeling.
+
 ```
 def run(input_df):
     import json
@@ -85,17 +88,18 @@ def run(input_df):
 
 To deploy the web service, you must have a model, a scoring script, and optionally a schema for the web service input data. The scoring script loads the model.pkl file from the current folder and uses it to produce a new predicted class. The input to the model is encoded features.
 
-To generate the scoring and schema files, execute the churn_schema_gen.py file that comes with the sample project in the AMLWorkbench CLI command prompt using Python interpreter directly.
+To generate the scoring and schema files, execute the `churn_schema_gen.py` file that comes with the sample project in the AMLWorkbench CLI command prompt using Python interpreter directly.
 
 ```
 python churn_schema_gen.py
 ```
 
-This will create service_schema.json (this file contains the schema of the web service input)
+This will create a file called `service_schema.json`. This file contains the schema of the web service input.
 
 ### Model Management
 
 The real-time web service requires a modelmanagement account. This can be created using the following commands:
+
 ```
 az group create -l <location> -n <name>
 az ml account modelmanagement create -l <location> -g <resource group> -n <account name>
@@ -105,21 +109,23 @@ az ml account modelmanagement set -n <account name> -g <resource group>
 To create the real-time web service, run the following command:
 
 ```
-az ml service create realtime -f score.py --model-file model.pkl -s service_schema.json -n <name> -r python
+az ml service create realtime -f score.py --model-file model.pkl -s service_schema.json -n <SERVICE_NAME> -r python
 ```
 
 
 
 ![AzureML_Service](Images/AzureMLService.png)
 
-The different az ml service create realtime command parameters are as follows:
-* -n: app name, must be lower case.
-* -f: scoring script file name
-* --model-file: model file, in this case it is the pickled sklearn model
-* -r: type of model, in this case it is the scikit-learn model
-The model and the scoring file are uploaded into an Azure service that we manage. As part of deployment process, the operationalization component uses the pickled model model.pkl and main.py to build a Docker image named <ACR_name>.azureacr.io/irisapp. It registers the image with your Azure Container Registry (ACR) service, pulls down that image locally to your computer, and starts a Docker container based on that image. As part of the deployment, an HTTP REST endpoint for the web service is created on your local machine.
+The different `az ml service create realtime` command parameters are as follows:
 
-Run docker ps to see the churn image as shown below:
+* `-n <SERVICE_NAME>` (must be lower case)
+* `-f <SCORING_SCRIPT_FILE_NAME>`
+* `--model-file <MODEL_FILENAME>`
+* `-r <RUNTIME>`
+
+The model and the scoring file are uploaded into an Azure service that we manage. As part of deployment process, the operationalization component uses the pickled model `model.pkl` and the script file `score.py` to build a Docker image named `<ACR_name>.azureacr.io/<SERVICE_NAME>`. It registers the image with your Azure Container Registry (ACR) service, pulls down that image locally to your computer, and starts a Docker container based on that image. As part of the deployment, an HTTP REST endpoint for the web service is created on your local machine.
+
+Run `docker ps` to see the churn image as shown below:
 
 ![RunDocker](Images/RunDocker.png)
 

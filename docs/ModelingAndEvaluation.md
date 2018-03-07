@@ -142,7 +142,17 @@ Download the model file `model.pkl` and save it to the root of your project fold
 
 ## 8. Execution – Local Docker Container
 
-If you have a Docker engine running locally, in the CLI window, run the below command. Note the change the run configuration from local to docker. You need either prepare the compute target explicitly, or set the `PrepareEnvironment` variable to `true` in `aml_config/docker.runconfig` before you can submit.
+If you have a Docker engine running locally, in the CLI window, run the below command. Note the change the run configuration from local to docker. You need to do one of the following before you submit:
+
+- Prepare the compute target explicitly via:
+
+```
+az ml experiment prepare -c docker
+```
+
+or 
+
+- set the `PrepareEnvironment` variable to `true` in `aml_config/docker.runconfig` before you can submit.
 
 ```
 az ml experiment submit -c docker CATelcoCustomerChurnModeling.py
